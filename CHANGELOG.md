@@ -9,6 +9,9 @@ Documentation for hipCUB is available at
 * Added `ForEach`, `ForEachN`, `ForEachCopy`, `ForEachCopyN` and `Bulk` functions to have parity with CUB.
 * Added the `hipcub::CubVector` type for CUB parity.
 
+### Changed
+* The NVIDIA backend now requires CUB, Thrust and libcu++ 2.5.0. If it is not found it will be downloaded from the NVIDIA CCCL repository.
+
 ## (Unreleased) hipCUB-3.3.0 for ROCm 6.3.0
 
 ### Fixed
