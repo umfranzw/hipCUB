@@ -717,6 +717,123 @@ TEST(HipcubDeviceSelectTests, UniqueDiscardOutputIterator)
     }
 }
 
+template<class T>
+struct TestLargeIndicesSelectOp
+{
+    T max_value;
+    __host__ __device__
+    inline bool
+        operator()(const T& value) const
+    {
+        return test_utils::less()(value, T(max_value));
+    }
+};
+
+class HipcubDeviceSelectLargeIndicesTests : public ::testing::TestWithParam<unsigned int>
+{
+public:
+    const bool debug_synchronous = false;
+};
+
+INSTANTIATE_TEST_SUITE_P(HipcubDeviceSelectLargeIndicesTest,
+                         HipcubDeviceSelectLargeIndicesTests,
+                         ::testing::Values(2048, 9643, 32768, 38713, 38713));
+
+TEST_P(HipcubDeviceSelectLargeIndicesTests, LargeIndicesSelectOp)
+{
+    int device_id = test_common_utils::obtain_device_from_ctest();
+    SCOPED_TRACE(testing::Message() << "with device_id= " << device_id);
+    HIP_CHECK(hipSetDevice(device_id));
+
+    using T                   = size_t; // input_type
+    using U                   = size_t; // output_type
+    using selected_count_type = size_t;
+
+    hipStream_t stream = 0; // default stream
+
+    const auto selected_size = GetParam();
+
+    for(size_t size : test_utils::get_large_sizes(0))
+    {
+        SCOPED_TRACE(testing::Message() << "with size= " << size);
+
+// Support for large indices in DeviceSelect is not implemented in CUB yet. Disable test meanwhile.
+#ifdef __HIP_PLATFORM_NVIDIA__
+        std::cout << "Test disabled for large sizes until support is present in CUB" << std::endl;
+        GTEST_SKIP();
+#endif
+
+        // Generate data
+        hipcub::CountingInputIterator<T> d_input(0);
+        U*                               d_output;
+        selected_count_type*             d_selected_count_output;
+        selected_count_type              expected_output_size = selected_size;
+        TestLargeIndicesSelectOp<T>      select_op{expected_output_size};
+        HIP_CHECK(test_common_utils::hipMallocHelper(&d_output,
+                                                     sizeof(d_output[0]) * expected_output_size));
+        HIP_CHECK(test_common_utils::hipMallocHelper(&d_selected_count_output,
+                                                     sizeof(d_selected_count_output[0])));
+
+        // Calculate expected results on host
+        std::vector<U> expected_output(expected_output_size);
+        std::iota(expected_output.begin(), expected_output.end(), U(0));
+
+        // Temp storage
+        size_t temp_storage_size_bytes;
+        void*  d_temp_storage = nullptr;
+        // Get the size of d_temp_storage
+        HIP_CHECK(hipcub::DeviceSelect::If(d_temp_storage,
+                                           temp_storage_size_bytes,
+                                           d_input,
+                                           d_output,
+                                           d_selected_count_output,
+                                           size,
+                                           select_op,
+                                           stream));
+
+        HIP_CHECK(hipDeviceSynchronize());
+
+        // temp_storage_size_bytes must be >0
+        ASSERT_GT(temp_storage_size_bytes, 0);
+
+        // Allocate temporary storage
+        HIP_CHECK(test_common_utils::hipMallocHelper(&d_temp_storage, temp_storage_size_bytes));
+
+        // Run
+        HIP_CHECK(hipcub::DeviceSelect::If(d_temp_storage,
+                                           temp_storage_size_bytes,
+                                           d_input,
+                                           d_output,
+                                           d_selected_count_output,
+                                           size,
+                                           select_op,
+                                           stream));
+        HIP_CHECK(hipDeviceSynchronize());
+
+        // Check if number of selected value is as expected
+        selected_count_type selected_count_output = 0;
+        HIP_CHECK(hipMemcpy(&selected_count_output,
+                            d_selected_count_output,
+                            sizeof(*d_selected_count_output),
+                            hipMemcpyDeviceToHost));
+        ASSERT_EQ(selected_count_output, selected_size);
+
+        // Check if outputs are as expected
+        std::vector<U> output(expected_output_size);
+        HIP_CHECK(hipMemcpy(output.data(),
+                            d_output,
+                            sizeof(*d_output) * expected_output_size,
+                            hipMemcpyDeviceToHost));
+
+        ASSERT_NO_FATAL_FAILURE(
+            test_utils::assert_eq(output, expected_output, expected_output_size));
+
+        HIP_CHECK(hipFree(d_output));
+        HIP_CHECK(hipFree(d_selected_count_output));
+        HIP_CHECK(hipFree(d_temp_storage));
+    }
+}
+
 template<typename KeyType,
          typename ValueType,
          typename EqualityOp        = hipcub::Equality,

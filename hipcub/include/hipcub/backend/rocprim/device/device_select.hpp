@@ -55,7 +55,7 @@ public:
                               FlagIterator         d_flags,
                               OutputIteratorT      d_out,
                               NumSelectedIteratorT d_num_selected_out,
-                              int                  num_items,
+                              int64_t              num_items,
                               hipStream_t          stream = 0)
     {
         return ::rocprim::select(d_temp_storage,
@@ -80,7 +80,7 @@ public:
                               FlagIterator         d_flags,
                               OutputIteratorT      d_out,
                               NumSelectedIteratorT d_num_selected_out,
-                              int                  num_items,
+                              int64_t              num_items,
                               hipStream_t          stream,
                               bool                 debug_synchronous)
     {
@@ -102,7 +102,7 @@ public:
                               IteratorT            d_data,
                               FlagIterator         d_flags,
                               NumSelectedIteratorT d_num_selected_out,
-                              int                  num_items,
+                              int64_t              num_items,
                               hipStream_t          stream = 0)
     {
         return Flagged(d_temp_storage,
@@ -122,7 +122,7 @@ public:
                               IteratorT            d_data,
                               FlagIterator         d_flags,
                               NumSelectedIteratorT d_num_selected_out,
-                              int                  num_items,
+                              int64_t              num_items,
                               hipStream_t          stream,
                               bool                 debug_synchronous)
     {
@@ -146,7 +146,7 @@ public:
                          InputIteratorT       d_in,
                          OutputIteratorT      d_out,
                          NumSelectedIteratorT d_num_selected_out,
-                         int                  num_items,
+                         int64_t              num_items,
                          SelectOp             select_op,
                          hipStream_t          stream = 0)
     {
@@ -171,7 +171,7 @@ public:
                          InputIteratorT       d_in,
                          OutputIteratorT      d_out,
                          NumSelectedIteratorT d_num_selected_out,
-                         int                  num_items,
+                         int64_t              num_items,
                          SelectOp             select_op,
                          hipStream_t          stream,
                          bool                 debug_synchronous)
@@ -193,7 +193,7 @@ public:
                          size_t&              temp_storage_bytes,
                          IteratorT            d_data,
                          NumSelectedIteratorT d_num_selected_out,
-                         int                  num_items,
+                         int64_t              num_items,
                          SelectOp             select_op,
                          hipStream_t          stream = 0)
     {
@@ -213,7 +213,7 @@ public:
                          size_t&              temp_storage_bytes,
                          IteratorT            d_data,
                          NumSelectedIteratorT d_num_selected_out,
-                         int                  num_items,
+                         int64_t              num_items,
                          SelectOp             select_op,
                          hipStream_t          stream,
                          bool                 debug_synchronous)
@@ -235,7 +235,7 @@ public:
                              InputIteratorT       d_in,
                              OutputIteratorT      d_out,
                              NumSelectedIteratorT d_num_selected_out,
-                             int                  num_items,
+                             int64_t              num_items,
                              hipStream_t          stream = 0)
     {
         return ::rocprim::unique(d_temp_storage,
@@ -256,7 +256,7 @@ public:
                              InputIteratorT       d_in,
                              OutputIteratorT      d_out,
                              NumSelectedIteratorT d_num_selected_out,
-                             int                  num_items,
+                             int64_t              num_items,
                              hipStream_t          stream,
                              bool                 debug_synchronous)
     {
