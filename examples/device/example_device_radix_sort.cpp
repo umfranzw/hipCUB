@@ -62,8 +62,8 @@ hipcub::CachingDeviceAllocator  g_allocator;  // Caching allocator for device me
 //---------------------------------------------------------------------
 
 /**
- * Simple key-value pairing for floating point types.  Distinguishes
- * between positive and negative zero.
+ * Simple key-value pairing for floating point types.
+ * Treats positive and negative zero as equivalent.
  */
 struct Pair
 {
@@ -72,18 +72,7 @@ struct Pair
 
     bool operator<(const Pair &b) const
     {
-        if (key < b.key)
-            return true;
-
-        if (key > b.key)
-            return false;
-
-        // Return true if key is negative zero and b.key is positive zero
-        unsigned int key_bits   = static_cast<unsigned int>(key);
-        unsigned int b_key_bits = static_cast<unsigned int>(b.key);
-        unsigned int HIGH_BIT   = 1u << 31;
-
-        return ((key_bits & HIGH_BIT) != 0) && ((b_key_bits & HIGH_BIT) == 0);
+        return key < b.key;
     }
 };
 
