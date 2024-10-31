@@ -34,6 +34,10 @@ function(add_hipcub_test TEST_NAME TEST_SOURCES)
 endfunction()
 
 function(add_hipcub_test_internal TEST_NAME TEST_SOURCES TEST_TARGET)
+  if(USE_HIPCXX)
+    set_source_files_properties(${TEST_SOURCES} PROPERTIES LANGUAGE HIP)
+  endif()
+
   add_executable(${TEST_TARGET} ${TEST_SOURCES})
   target_link_libraries(${TEST_TARGET}
     PRIVATE
