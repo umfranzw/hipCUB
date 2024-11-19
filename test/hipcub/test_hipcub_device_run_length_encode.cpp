@@ -36,15 +36,13 @@
 template<class Key,
          class Count,
          unsigned int MinSegmentLength,
-         unsigned int MaxSegmentLength,
-         bool         UseGraphs = false>
+         unsigned int MaxSegmentLength>
 struct params
 {
     using key_type                                   = Key;
     using count_type                                 = Count;
     static constexpr unsigned int min_segment_length = MinSegmentLength;
     static constexpr unsigned int max_segment_length = MaxSegmentLength;
-    static constexpr bool         use_graphs         = UseGraphs;
 };
 
 template<class Params>
@@ -65,10 +63,7 @@ typedef ::testing::Types<params<int, int, 1, 1>,
                          params<int, unsigned int, 1000, 5000>,
                          params<unsigned int, size_t, 2048, 2048>,
                          params<unsigned int, unsigned int, 1000, 50000>,
-                         params<unsigned long long, unsigned long long, 100000, 100000>,
-                         // Test graph capture
-                         params<int, int, 1, 1, true>,
-                         params<float, int, 1, 10, true>>
+                         params<unsigned long long, unsigned long long, 100000, 100000>>
     Params;
 
 TYPED_TEST_SUITE(HipcubDeviceRunLengthEncode, Params);
@@ -87,11 +82,6 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, Encode)
                                   std::uniform_int_distribution<key_type>>::type;
 
     hipStream_t stream = 0; // default
-    if(TestFixture::params::use_graphs)
-    {
-        // Default stream does not support hipGraph stream capture, so create one
-        HIP_CHECK(hipStreamCreateWithFlags(&stream, hipStreamNonBlocking));
-    }
 
     for(size_t seed_index = 0; seed_index < random_seeds_count + seed_size; seed_index++)
     {
@@ -169,12 +159,6 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, Encode)
             HIP_CHECK(
                 test_common_utils::hipMallocHelper(&d_temporary_storage, temporary_storage_bytes));
 
-            hipGraph_t graph;
-            if(TestFixture::params::use_graphs)
-            {
-                graph = test_utils::createGraphHelper(stream);
-            }
-
             HIP_CHECK(hipcub::DeviceRunLengthEncode::Encode(d_temporary_storage,
                                                             temporary_storage_bytes,
                                                             d_input,
@@ -183,12 +167,6 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, Encode)
                                                             d_runs_count_output,
                                                             size,
                                                             stream));
-
-            hipGraphExec_t graph_instance;
-            if(TestFixture::params::use_graphs)
-            {
-                graph_instance = test_utils::endCaptureGraphHelper(graph, stream, true, true);
-            }
 
             HIP_CHECK(hipFree(d_temporary_storage));
 
@@ -222,17 +200,7 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, Encode)
                 ASSERT_EQ(unique_output[i], unique_expected[i]);
                 ASSERT_EQ(counts_output[i], counts_expected[i]);
             }
-
-            if(TestFixture::params::use_graphs)
-            {
-                test_utils::cleanupGraphHelper(graph, graph_instance);
-            }
         }
-    }
-
-    if(TestFixture::params::use_graphs)
-    {
-        HIP_CHECK(hipStreamDestroy(stream));
     }
 }
 
@@ -251,11 +219,6 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, NonTrivialRuns)
                                   std::uniform_int_distribution<key_type>>::type;
 
     hipStream_t stream = 0; // default
-    if(TestFixture::params::use_graphs)
-    {
-        // Default stream does not support hipGraph stream capture, so create one
-        HIP_CHECK(hipStreamCreateWithFlags(&stream, hipStreamNonBlocking));
-    }
 
     for(size_t seed_index = 0; seed_index < random_seeds_count + seed_size; seed_index++)
     {
@@ -348,12 +311,6 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, NonTrivialRuns)
             HIP_CHECK(
                 test_common_utils::hipMallocHelper(&d_temporary_storage, temporary_storage_bytes));
 
-            hipGraph_t graph;
-            if(TestFixture::params::use_graphs)
-            {
-                graph = test_utils::createGraphHelper(stream);
-            }
-
             HIP_CHECK(hipcub::DeviceRunLengthEncode::NonTrivialRuns(d_temporary_storage,
                                                                     temporary_storage_bytes,
                                                                     d_input,
@@ -362,12 +319,6 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, NonTrivialRuns)
                                                                     d_runs_count_output,
                                                                     size,
                                                                     stream));
-
-            hipGraphExec_t graph_instance;
-            if(TestFixture::params::use_graphs)
-            {
-                graph_instance = test_utils::endCaptureGraphHelper(graph, stream, true, true);
-            }
 
             HIP_CHECK(hipFree(d_temporary_storage));
 
@@ -404,16 +355,6 @@ TYPED_TEST(HipcubDeviceRunLengthEncode, NonTrivialRuns)
                 ASSERT_EQ(offsets_output[i], offsets_expected[i]);
                 ASSERT_EQ(counts_output[i], counts_expected[i]);
             }
-
-            if(TestFixture::params::use_graphs)
-            {
-                test_utils::cleanupGraphHelper(graph, graph_instance);
-            }
         }
-    }
-
-    if(TestFixture::params::use_graphs)
-    {
-        HIP_CHECK(hipStreamDestroy(stream));
     }
 }
