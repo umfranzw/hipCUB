@@ -51,6 +51,7 @@
 
 // Device
 #include "device/device_adjacent_difference.hpp"
+#include "device/device_copy.hpp"
 #include "device/device_histogram.hpp"
 #include "device/device_memcpy.hpp"
 #include "device/device_merge_sort.hpp"
