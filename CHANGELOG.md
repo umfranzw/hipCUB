@@ -12,6 +12,8 @@ Full documentation for hipCUB is available at [https://rocm.docs.amd.com/project
 * Added `--emulation` option for `rtest.py`
   * Unit tests can be run with `[--emulation|-e|--test|-t]=<test_name>`
 * Added `DeviceSelect::FlaggedIf` and its inplace overload.
+* Added CUB macros missing from hipCUB: `HIPCUB_MAX`, `HIPCUB_MIN`, `HIPCUB_QUOTIENT_FLOOR`, `HIPCUB_QUOTIENT_CEILING`, `HIPCUB_ROUND_UP_NEAREST` and `HIPCUB_ROUND_DOWN_NEAREST`.
+* Added `hipcub::AliasTemporaries` function for CUB parity.
 
 ### Changed
 * Removed usage of `std::unary_function` and `std::binary_function` in `test_hipcub_device_adjacent_difference.cpp`
