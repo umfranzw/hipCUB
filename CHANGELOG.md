@@ -22,6 +22,9 @@ Full documentation for hipCUB is available at [https://rocm.docs.amd.com/project
 * The NVIDIA backend now requires CUB, Thrust and libcu++ 2.5.0. If it is not found it will be downloaded from the NVIDIA CCCL repository.
 * Changed the C++ version from 14 to 17. C++14 will be deprecated in the next major release.
 
+### Known issues
+* When building on Windows using the HIP SDK release for ROCm 6.4, hipMalloc currently returns hipSuccess for some sizes that are larger than it can allocate. For this reason, we've limited the maximum test case sizes for some unit tests (eg. HipcubDeviceRadixSort's SortKeysLargeSizes test).
+
 ## hipCUB 3.3.0 for ROCm 6.3.0
 
 ### Added
