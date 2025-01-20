@@ -23,7 +23,7 @@ Full documentation for hipCUB is available at [https://rocm.docs.amd.com/project
 * Changed the C++ version from 14 to 17. C++14 will be deprecated in the next major release.
 
 ### Known issues
-* When building on Windows using the HIP SDK release for ROCm 6.4, hipMalloc currently returns hipSuccess for some sizes that are larger than it can allocate. For this reason, we've limited the maximum test case sizes for some unit tests (eg. HipcubDeviceRadixSort's SortKeysLargeSizes test).
+* When building on Windows using HIP SDK for ROCm 6.4, ``hipMalloc`` returns ``hipSuccess`` even when the size passed to it is too large and the allocation fails. Because of this, limits have been set for the maximum test case sizes for some unit tests such as HipcubDeviceRadixSort's SortKeysLargeSizes .
 
 ## hipCUB 3.3.0 for ROCm 6.3.0
 
