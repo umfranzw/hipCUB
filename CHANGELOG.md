@@ -2,7 +2,7 @@
 
 Full documentation for hipCUB is available at [https://rocm.docs.amd.com/projects/hipCUB/en/latest/](https://rocm.docs.amd.com/projects/hipCUB/en/latest/).
 
-## (Unreleased) hipCUB-x.x.x for ROCm 6.x.x
+## (Unreleased) hipCUB-3.5.0 for ROCm 6.5.0
 
 ### Added
 
@@ -12,6 +12,9 @@ Full documentation for hipCUB is available at [https://rocm.docs.amd.com/project
   * `ScanTileState`
   * `ReduceByKeyScanTileState`
   * `TilePrefixCallbackOp`
+  
+### Removed
+* This release removes support for custom builds on gfx940 and gfx941.
 
 ## hipCUB-3.4.0 for ROCm 6.4.0
 
