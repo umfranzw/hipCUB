@@ -15,6 +15,7 @@ Full documentation for hipCUB is available at [https://rocm.docs.amd.com/project
   
 ### Removed
 * This release removes support for custom builds on gfx940 and gfx941.
+* gfx950 support
 
 ## hipCUB-3.4.0 for ROCm 6.4.0
 
